@@ -4,11 +4,16 @@ const root = document.getElementById("root");
 
 const areaWidth = 800;
 const areaHeight = 600;
-const widthNinja = 181;
-const heightNinja = 229;
 const groundY = 540;
-const ninjaXSpeed = 5;
 const backgroundWidth = 1000;
+
+const ninjaWidth = 181;
+const ninjaHeight = 229;
+const ninjaXSpeed = 5;
+
+const ninjaNrFramesPerRow = 5;
+const ninjaNrAnimationFrames = 7;
+const ninjaAnimationSpeed = 3;
 
 const enumKeyName = {
   Space: " ",
@@ -24,24 +29,30 @@ canvas.width = areaWidth;
 canvas.height = areaHeight;
 
 const context = canvas.getContext("2d");
-const ninjaImage = createImage("assets/images/nanonaut.png");
+const ninjaImage = createImage("assets/images/animatedNanonaut.png");
 const background = createImage("assets/images/background.png");
 
-let ninjaX = 50;
-let ninjaY = 40;
+let ninjaX = areaWidth / 2;
+let ninjaY = groundY - ninjaHeight;
+
 let ninjaYAcceleration = 1;
 let ninjaYSpeed = 0;
+
 let spaceKeyIsPressed = false;
 let ninjaJumpSpeed = 20;
 let ninjaIsInTheAir = false;
+
+let ninjaFrameNr = 0;
+let gameFrameCounter = 0;
+
 let cameraX = 0;
 let cameraY = 0;
 
 const gravitation = () => {
   ninjaY += ninjaYSpeed;
   ninjaYSpeed += ninjaYAcceleration;
-  if (ninjaY > groundY - heightNinja) {
-    ninjaY = groundY - heightNinja;
+  if (ninjaY > groundY - ninjaHeight) {
+    ninjaY = groundY - ninjaHeight;
     ninjaYSpeed = 0;
     ninjaIsInTheAir = false;
   }
@@ -54,10 +65,25 @@ const jump = () => {
   }
 };
 
-const update = () => {
+const move = () => {
   cameraX = ninjaX - 150;
   ninjaX += ninjaXSpeed;
+};
+
+const runAnimation = () => {
+  if (gameFrameCounter % ninjaAnimationSpeed === 0) {
+    ninjaFrameNr += 1;
+    if (ninjaFrameNr >= ninjaNrAnimationFrames) {
+      ninjaFrameNr = 0;
+    }
+  }
+};
+
+const update = () => {
+  gameFrameCounter += 1;
   gravitation();
+  move();
+  runAnimation();
   jump();
 };
 
@@ -75,7 +101,21 @@ const draw = () => {
   context.fillRect(0, groundY - 40, areaWidth, areaHeight - groundY + 40);
 
   //ninja
-  context.drawImage(ninjaImage, ninjaX - cameraX, ninjaY - cameraY);
+  let ninjaSpriteSheetRow = Math.floor(ninjaFrameNr / ninjaNrFramesPerRow);
+  let ninjaSpriteSheetColumn = ninjaFrameNr % ninjaNrFramesPerRow;
+  let ninjaSpriteSheetX = ninjaSpriteSheetColumn * ninjaWidth;
+  let ninjaSpriteSheetY = ninjaSpriteSheetRow * ninjaHeight;
+  context.drawImage(
+    ninjaImage,
+    ninjaSpriteSheetX,
+    ninjaSpriteSheetY,
+    ninjaWidth,
+    ninjaHeight,
+    ninjaX - cameraX,
+    ninjaY - cameraY,
+    ninjaWidth,
+    ninjaHeight
+  );
 };
 
 // Main loop
