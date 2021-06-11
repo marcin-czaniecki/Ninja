@@ -8,6 +8,7 @@ const widthNinja = 181;
 const heightNinja = 229;
 const groundY = 540;
 const ninjaXSpeed = 5;
+const backgroundWidth = 1000;
 
 const enumKeyName = {
   Space: " ",
@@ -33,6 +34,8 @@ let ninjaYSpeed = 0;
 let spaceKeyIsPressed = false;
 let ninjaJumpSpeed = 20;
 let ninjaIsInTheAir = false;
+let cameraX = 0;
+let cameraY = 0;
 
 const gravitation = () => {
   ninjaY += ninjaYSpeed;
@@ -52,6 +55,8 @@ const jump = () => {
 };
 
 const update = () => {
+  cameraX = ninjaX - 150;
+  ninjaX += ninjaXSpeed;
   gravitation();
   jump();
 };
@@ -62,13 +67,15 @@ const draw = () => {
   context.fillStyle = "LightSkyBlue";
   context.fillRect(0, 0, areaWidth, groundY - 40);
   //background
-  context.drawImage(background, 0, -210);
+  let backgroundX = -(cameraX % backgroundWidth);
+  context.drawImage(background, backgroundX, -210);
+  context.drawImage(background, backgroundX + backgroundWidth, -210);
   //ground
   context.fillStyle = "ForestGreen";
   context.fillRect(0, groundY - 40, areaWidth, areaHeight - groundY + 40);
 
   //ninja
-  context.drawImage(ninjaImage, ninjaX, ninjaY);
+  context.drawImage(ninjaImage, ninjaX - cameraX, ninjaY - cameraY);
 };
 
 // Main loop
