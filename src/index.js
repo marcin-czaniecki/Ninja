@@ -1,14 +1,34 @@
-import { createImage, generateWorldElement, SpriteSheet, enumKeyName, Mob } from "./helpers.mjs";
+import {
+  createImage,
+  generateWorldElement,
+  SpriteSheet,
+  enumKeyName,
+  Mob,
+} from "./helpers.mjs";
 import { nitro, useNitro } from "./nitro.mjs";
 import { area, player, robot } from "./data.mjs";
 // Constants
 const root = document.getElementById("root");
 
+const playerCollisionRectangle = {
+  xOffset: 60,
+  yOffset: 20,
+  width: 50,
+  height: 200,
+};
+const robotCollisionRectangle = {
+  xOffset: 50,
+  yOffset: 20,
+  width: 50,
+  height: 100,
+};
+const screenShakeRadius = 16;
 const robots = [];
 // Preparation
 const canvas = document.createElement("canvas");
 canvas.width = area.width;
 canvas.height = area.height;
+let screenShake = false;
 
 const context = canvas.getContext("2d");
 const bush01Image = createImage("../assets/images/bush1.png");
@@ -16,7 +36,11 @@ const bush02Image = createImage("../assets/images/bush2.png");
 const backgroundImage = createImage("../assets/images/background.png");
 
 const bushData = generateWorldElement(area.width, [bush01Image, bush02Image]);
-const bushData2 = generateWorldElement(area.width, [bush01Image, bush02Image], -100);
+const bushData2 = generateWorldElement(
+  area.width,
+  [bush01Image, bush02Image],
+  -100
+);
 
 const gravitation = () => {
   player.position.y += player.vertical.speed;
@@ -56,9 +80,65 @@ const refreshBush = (bushData) => {
     }
   }
 };
-
+const doesPlayerOverlapMobAlongOneAxis = (
+  playerNearAxi,
+  playerFarAxi,
+  mobNearAxi,
+  mobFarAxi
+) => {
+  const playerOverlapsNearMobEdge =
+    playerFarAxi >= mobNearAxi && playerFarAxi <= mobFarAxi;
+  const playerOverlapsFarMobEdge =
+    playerNearAxi >= mobNearAxi && playerNearAxi <= mobFarAxi;
+  const playerOverlapsEntireMob =
+    playerNearAxi <= mobNearAxi && playerFarAxi >= mobFarAxi;
+  return (
+    playerOverlapsNearMobEdge ||
+    playerOverlapsFarMobEdge ||
+    playerOverlapsEntireMob
+  );
+};
+function doesPlayerOverlapMob(
+  playerX,
+  playerY,
+  playerWidth,
+  playerHeight,
+  mobX,
+  mobY,
+  mobWidth,
+  mobHeight
+) {
+  var playerOverlapsMobOnXAxis = doesPlayerOverlapMobAlongOneAxis(
+    playerX,
+    playerX + playerWidth,
+    mobX,
+    mobX + mobWidth
+  );
+  var playerOverlapsMobOnYAxis = doesPlayerOverlapMobAlongOneAxis(
+    playerY,
+    playerY + playerHeight,
+    mobY,
+    mobY + mobHeight
+  );
+  return playerOverlapsMobOnXAxis && playerOverlapsMobOnYAxis;
+}
 const updateMobs = (mobBasicParameter, mobs, area) => {
+  let playerTouchedAMob = false;
   for (const mob of mobs) {
+    if (
+      doesPlayerOverlapMob(
+        player.position.x + playerCollisionRectangle.xOffset,
+        player.position.y + playerCollisionRectangle.yOffset,
+        playerCollisionRectangle.width,
+        playerCollisionRectangle.height,
+        mob.x + robotCollisionRectangle.xOffset,
+        mob.y + robotCollisionRectangle.yOffset,
+        robotCollisionRectangle.width,
+        robotCollisionRectangle.height
+      )
+    ) {
+      playerTouchedAMob = true;
+    }
     mob.x -= mobBasicParameter.horizontal.speed;
     if (area.frameCounter % mobBasicParameter.animation.speed === 0) {
       mob.frameNr += 1;
@@ -70,7 +150,8 @@ const updateMobs = (mobBasicParameter, mobs, area) => {
   let mobIndex = 0;
 
   while (mobIndex <= mobs.length) {
-    const mobIsOutArea = mobs[mobIndex]?.x < area.camera.x - mobBasicParameter.width;
+    const mobIsOutArea =
+      mobs[mobIndex]?.x < area.camera.x - mobBasicParameter.width;
     if (mobIsOutArea) {
       mobs.splice(mobIndex, 1);
     } else {
@@ -89,14 +170,22 @@ const updateMobs = (mobBasicParameter, mobs, area) => {
       const differenceDistance = Math.random() * (maxDistance - minDistance);
       const newMobPositionsX = lastMobX + minDistance + differenceDistance;
 
-      mobs.push(new Mob(newMobPositionsX, area.groundY - mobBasicParameter.height));
+      mobs.push(
+        new Mob(newMobPositionsX, area.groundY - mobBasicParameter.height)
+      );
     }
   }
+  return playerTouchedAMob;
 };
 
 const update = () => {
   area.frameCounter += 1;
-  updateMobs(robot, robots, area);
+  screenShake = false;
+  var nanonautTouchedARobot = updateMobs(robot, robots, area);
+  if (nanonautTouchedARobot) {
+    screenShake = true;
+  }
+
   gravitation();
   move();
   runAnimation();
@@ -108,12 +197,24 @@ const update = () => {
 
 const draw = () => {
   context.clearRect(0, 0, area.width, area.height);
+
+  let shakenCameraX = area.camera.x;
+  let shakenCameraY = area.camera.y;
+  if (screenShake) {
+    shakenCameraX += (Math.random() - 0.5) * screenShakeRadius;
+    shakenCameraY += (Math.random() - 0.5) * screenShakeRadius;
+  }
+
   //World - sky - background - ground
   area.draw(context, backgroundImage);
 
   //World elements
   for (const bush of bushData) {
-    context.drawImage(bush.image, bush.x - area.camera.x, area.groundY - bush.y - area.camera.y);
+    context.drawImage(
+      bush.image,
+      bush.x - shakenCameraX,
+      area.groundY - bush.y - shakenCameraY
+    );
   }
 
   for (const position of robots) {
@@ -125,7 +226,7 @@ const draw = () => {
       robot.height
     );
 
-    robotSpriteSheet.draw(context, position.x - area.camera.x, 400);
+    robotSpriteSheet.draw(context, position.x - shakenCameraX, 400);
   }
 
   //ninja
@@ -137,9 +238,17 @@ const draw = () => {
     player.height
   );
 
-  ninjaSpriteSheet.draw(context, player.position.x - area.camera.x, player.position.y);
+  ninjaSpriteSheet.draw(
+    context,
+    player.position.x - shakenCameraX,
+    player.position.y
+  );
   for (const bush of bushData2) {
-    context.drawImage(bush.image, bush.x - area.camera.x, area.groundY - bush.y - area.camera.y);
+    context.drawImage(
+      bush.image,
+      bush.x - shakenCameraX,
+      area.groundY - bush.y - shakenCameraY
+    );
   }
 };
 
