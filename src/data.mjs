@@ -5,6 +5,8 @@ export const area = new Area(1024, 768, 540, 1000);
 export const player = {
   width: 181,
   height: 229,
+  maxHp: 100,
+  hp: 100,
   position: { x: area.width / 2, y: area.groundY - 229 },
   canNitro: true,
   activeNitro: false,

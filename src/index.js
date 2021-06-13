@@ -184,6 +184,9 @@ const update = () => {
   var nanonautTouchedARobot = updateMobs(robot, robots, area);
   if (nanonautTouchedARobot) {
     screenShake = true;
+    if (player.hp > 0) {
+      player.hp -= 1;
+    }
   }
 
   gravitation();
@@ -250,6 +253,10 @@ const draw = () => {
       area.groundY - bush.y - shakenCameraY
     );
   }
+  context.fillStyle = "red";
+  context.fillRect(400, 10, (player.hp / player.maxHp) * 380, 20);
+  context.strokeStyle = "red";
+  context.strokeRect(400, 10, 380, 20);
 };
 
 // Main loop
