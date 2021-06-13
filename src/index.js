@@ -23,11 +23,17 @@ const robotCollisionRectangle = {
   height: 100,
 };
 const screenShakeRadius = 16;
+
+const playGameMode = 0;
+const gameOverGameMode = 1;
+
 const robots = [];
 // Preparation
 const canvas = document.createElement("canvas");
 canvas.width = area.width;
 canvas.height = area.height;
+
+let gameMode = playGameMode;
 let screenShake = false;
 
 const context = canvas.getContext("2d");
@@ -179,6 +185,7 @@ const updateMobs = (mobBasicParameter, mobs, area) => {
 };
 
 const update = () => {
+  if (gameMode != playGameMode) return;
   area.frameCounter += 1;
   screenShake = false;
   var nanonautTouchedARobot = updateMobs(robot, robots, area);
@@ -186,6 +193,10 @@ const update = () => {
     screenShake = true;
     if (player.hp > 0) {
       player.hp -= 1;
+    }
+    if (player.hp <= 0) {
+      gameMode = gameOverGameMode;
+      screenShake = false;
     }
   }
 
@@ -253,10 +264,22 @@ const draw = () => {
       area.groundY - bush.y - shakenCameraY
     );
   }
+
+  const playerDistance = player.position.x / 100;
+  context.fillStyle = "black";
+  context.font = "48px sans-serif";
+  context.fillText(playerDistance.toFixed(0) + "m", 20, 40);
+
   context.fillStyle = "red";
   context.fillRect(400, 10, (player.hp / player.maxHp) * 380, 20);
   context.strokeStyle = "red";
   context.strokeRect(400, 10, 380, 20);
+
+  if (gameMode === gameOverGameMode) {
+    context.fillStyle = "black";
+    context.font = "96px sans-serif";
+    context.fillText("KONIEC GRY", 120, 300);
+  }
 };
 
 // Main loop
