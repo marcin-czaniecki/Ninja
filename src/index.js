@@ -1,29 +1,10 @@
-import {
-  createImage,
-  generateWorldElement,
-  SpriteSheet,
-  Area,
-  enumKeyName,
-} from "./helpers.mjs";
-
+import { createImage, generateWorldElement, SpriteSheet, enumKeyName, Mob } from "./helpers.mjs";
+import { nitro, useNitro } from "./nitro.mjs";
+import { area, player, robot } from "./data.mjs";
 // Constants
 const root = document.getElementById("root");
-//width-height-groundY-backgroundWidth
-const area = new Area(1024, 768, 540, 1000);
 
-const player = {
-  width: 181,
-  height: 229,
-  position: { x: area.width / 2, y: area.groundY - 229 },
-  canNitro: true,
-  activeNitro: false,
-  jump: { active: false, height: 20, isInTheAir: false },
-  image: createImage("../assets/images/animatedNanonaut.png"),
-  animation: { speed: 3, frameNr: 0, framesPerRow: 5, frames: 7 },
-  horizontal: { acceleration: 1, speed: 5 },
-  vertical: { acceleration: 1, speed: 0 },
-};
-
+const robots = [];
 // Preparation
 const canvas = document.createElement("canvas");
 canvas.width = area.width;
@@ -34,7 +15,8 @@ const bush01Image = createImage("../assets/images/bush1.png");
 const bush02Image = createImage("../assets/images/bush2.png");
 const backgroundImage = createImage("../assets/images/background.png");
 
-const bushData = generateWorldElement(area.width, bush01Image, bush02Image);
+const bushData = generateWorldElement(area.width, [bush01Image, bush02Image]);
+const bushData2 = generateWorldElement(area.width, [bush01Image, bush02Image], -100);
 
 const gravitation = () => {
   player.position.y += player.vertical.speed;
@@ -67,22 +49,7 @@ const runAnimation = () => {
   }
 };
 
-const nitro = () => {
-  if (player.activeNitro) {
-    player.horizontal.speed = 15;
-    player.animation.speed = 2;
-    setTimeout(() => {
-      player.horizontal.speed = 3;
-      player.animation.speed = 4;
-    }, 5000);
-    setTimeout(() => {
-      player.animation.speed = 3;
-      player.horizontal.speed = 5;
-    }, 15000);
-  }
-};
-
-const refreshBush = () => {
+const refreshBush = (bushData) => {
   for (const bush of bushData) {
     if (bush.x - area.camera.x < -area.width) {
       bush.x += 2 * area.width + 150;
@@ -90,14 +57,53 @@ const refreshBush = () => {
   }
 };
 
+const updateMobs = (mobBasicParameter, mobs, area) => {
+  for (const mob of mobs) {
+    mob.x -= mobBasicParameter.horizontal.speed;
+    if (area.frameCounter % mobBasicParameter.animation.speed === 0) {
+      mob.frameNr += 1;
+      if (mob.frameNr >= mobBasicParameter.animation.frames) {
+        mob.frameNr = 0;
+      }
+    }
+  }
+  let mobIndex = 0;
+
+  while (mobIndex <= mobs.length) {
+    const mobIsOutArea = mobs[mobIndex]?.x < area.camera.x - mobBasicParameter.width;
+    if (mobIsOutArea) {
+      mobs.splice(mobIndex, 1);
+    } else {
+      mobIndex += 1;
+    }
+
+    const isMaximumMuchMobs = mobs.length < mobBasicParameter.spawn.maxMobs;
+    if (isMaximumMuchMobs) {
+      let lastMobX = area.width;
+      if (mobs.length > 0) {
+        lastMobX = mobs[mobs.length - 1].x;
+      }
+
+      const maxDistance = mobBasicParameter.spawn.distance.max;
+      const minDistance = mobBasicParameter.spawn.distance.min;
+      const differenceDistance = Math.random() * (maxDistance - minDistance);
+      const newMobPositionsX = lastMobX + minDistance + differenceDistance;
+
+      mobs.push(new Mob(newMobPositionsX, area.groundY - mobBasicParameter.height));
+    }
+  }
+};
+
 const update = () => {
   area.frameCounter += 1;
+  updateMobs(robot, robots, area);
   gravitation();
   move();
   runAnimation();
-  nitro();
+  nitro(player, 15, 3, 5);
   jump();
-  refreshBush();
+  refreshBush(bushData);
+  refreshBush(bushData2);
 };
 
 const draw = () => {
@@ -107,11 +113,19 @@ const draw = () => {
 
   //World elements
   for (const bush of bushData) {
-    context.drawImage(
-      bush.image,
-      bush.x - area.camera.x,
-      area.groundY - bush.y - area.camera.y
+    context.drawImage(bush.image, bush.x - area.camera.x, area.groundY - bush.y - area.camera.y);
+  }
+
+  for (const position of robots) {
+    const robotSpriteSheet = new SpriteSheet(
+      robot.image,
+      position.frameNr,
+      robot.animation.framesPerRow,
+      robot.width,
+      robot.height
     );
+
+    robotSpriteSheet.draw(context, position.x - area.camera.x, 400);
   }
 
   //ninja
@@ -123,11 +137,10 @@ const draw = () => {
     player.height
   );
 
-  ninjaSpriteSheet.draw(
-    context,
-    player.position.x - area.camera.x,
-    player.position.y - area.camera.y
-  );
+  ninjaSpriteSheet.draw(context, player.position.x - area.camera.x, player.position.y);
+  for (const bush of bushData2) {
+    context.drawImage(bush.image, bush.x - area.camera.x, area.groundY - bush.y - area.camera.y);
+  }
 };
 
 // Main loop
@@ -141,24 +154,13 @@ const start = () => {
   window.requestAnimationFrame(mainLoop);
 };
 
-//control
-const useNitro = (canUse) => {
-  if (canUse) {
-    setTimeout(() => {
-      canUse = true;
-    }, 30000);
-  }
-  canUse = false;
-  return true;
-};
-
 const onKeyDown = ({ key }) => {
   switch (key) {
     case enumKeyName.Space:
       player.jump.active = true;
       break;
     case enumKeyName.ArrowRight:
-      player.activeNitro = useNitro(player.canNitro);
+      useNitro(player);
       break;
     case enumKeyName.ArrowUp:
       player.jump.active = true;
