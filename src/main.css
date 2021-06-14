@@ -11,8 +11,8 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 .info {
-  display: felx;
+  display: flex;
 }
