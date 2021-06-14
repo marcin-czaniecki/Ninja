@@ -1,0 +1,26 @@
+{
+  "name": "ninja",
+  "version": "1.0.0",
+  "description": "Gama about ninja",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janossik/Ninja.git"
+  },
+  "keywords": [
+    "ninja",
+    "nanonaut"
+  ],
+  "author": "Marcin Czaniecki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janossik/Ninja/issues"
+  },
+  "homepage": "https://github.com/janossik/Ninja#readme",
+  "devDependencies": {
+    "eslint": "^7.28.0"
+  }
+}
