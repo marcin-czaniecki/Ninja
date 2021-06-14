@@ -14,6 +14,18 @@ const rules = {
   gameOverGameMode: 1,
   screenShake: false,
 };
+//scaling game difficulty over time
+setInterval(() => {
+  robot.spawn.maxMobs += 1;
+  if (robot.spawn.distance.min > 400) {
+    robot.spawn.distance.min -= 100;
+  }
+  console.log("More robots!");
+  setTimeout(() => {
+    robot.horizontal.speed += 1;
+    console.log("The robots got new oil will be faster!");
+  }, 10000);
+}, 30000);
 
 const robots = [];
 // Preparation

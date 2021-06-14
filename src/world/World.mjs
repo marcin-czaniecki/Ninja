@@ -27,6 +27,11 @@ export class Area {
       backgroundX + this.backgroundWidth,
       -210
     );
+    context.drawImage(
+      backgroundImage,
+      backgroundX + this.backgroundWidth + this.backgroundWidth,
+      -210
+    );
   }
   drawGround(context) {
     context.fillStyle = "ForestGreen";

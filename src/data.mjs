@@ -4,7 +4,7 @@ import { Animation } from "./animations/animations.mjs";
 import { createImage } from "./helpers/helpers.mjs";
 import { Player } from "./player/player.mjs";
 
-export const area = new Area(1024, 768, 540, 1000);
+export const area = new Area(window.innerWidth, 768, 540, 1000);
 
 export const player = new Player(
   area,

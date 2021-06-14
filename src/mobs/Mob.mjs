@@ -20,10 +20,10 @@ export class MobBasicParameter {
     this.horizontal = { acceleration: 1, speed: 5 };
     this.vertical = { acceleration: 1, speed: 0 };
     this.spawn = {
-      maxMobs: 3,
+      maxMobs: Math.round(window.innerWidth / 400),
       distance: {
-        max: 1200,
-        min: 400,
+        max: window.innerWidth,
+        min: window.innerWidth / 2,
       },
     };
     this.collisionRectangle = {
