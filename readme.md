@@ -4,3 +4,7 @@
 
 In this game you are a ninja and you have to fight all the time.
 Good luck, shinobi!
+
+### Update!
+
+I added a lot of my own approach making the code more up-to-date. Mainly only the game mechanics remained, but also added my game mechanics!
