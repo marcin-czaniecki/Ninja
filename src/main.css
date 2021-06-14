@@ -10,5 +10,9 @@ body {
   padding: 0px;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   overflow: hidden;
+}
+.info {
+  display: felx;
 }
