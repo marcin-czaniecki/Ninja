@@ -259,7 +259,7 @@ const draw = () => {
   if (gameMode === rules.gameOverGameMode) {
     context.fillStyle = "black";
     context.font = "96px sans-serif";
-    context.fillText("KONIEC GRY", 120, 300);
+    context.fillText("END GAME", 120, 300);
   }
 };
 
