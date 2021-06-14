@@ -10,7 +10,7 @@ export const player = new Player(
   area,
   181,
   229,
-  createImage("../assets/images/animatedNanonaut.png"),
+  createImage("./assets/images/animatedNanonaut.png"),
   new Animation(3, 0, 5, 7)
 );
 
@@ -18,5 +18,5 @@ export const robot = new MobBasicParameter(
   141,
   139,
   new Animation(5, 0, 3, 9),
-  createImage("../assets/images/animatedRobot.png")
+  createImage("./assets/images/animatedRobot.png")
 );

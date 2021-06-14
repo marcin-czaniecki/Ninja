@@ -24,9 +24,9 @@ canvas.height = area.height;
 let gameMode = rules.playGameMode;
 
 const context = canvas.getContext("2d");
-const bush01Image = createImage("../assets/images/bush1.png");
-const bush02Image = createImage("../assets/images/bush2.png");
-const backgroundImage = createImage("../assets/images/background.png");
+const bush01Image = createImage("./assets/images/bush1.png");
+const bush02Image = createImage("./assets/images/bush2.png");
+const backgroundImage = createImage("./assets/images/background.png");
 
 const bushData = area.generateWorldElement(area.width, [
   bush01Image,
