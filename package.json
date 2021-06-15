@@ -1,9 +1,11 @@
 {
   "name": "ninja",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Gama about ninja",
   "main": "index.js",
   "scripts": {
+    "start": "mkdir dist && cp -R ./src/assets ./dist/assets && parcel src/index.html",
+    "build": "mkdir dist && cp -R ./src/assets ./dist/assets && parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,8 +21,12 @@
   "bugs": {
     "url": "https://github.com/janossik/Ninja/issues"
   },
+  "dependencies": {
+    "parcel-bundler": "^1.9.4"
+  },
   "homepage": "https://github.com/janossik/Ninja#readme",
   "devDependencies": {
-    "eslint": "^7.28.0"
+    "eslint": "^7.28.0",
+    "typescript": "^4.3.2"
   }
 }
