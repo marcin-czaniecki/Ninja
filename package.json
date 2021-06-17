@@ -4,7 +4,7 @@
   "description": "Gama about ninja",
   "main": "index.js",
   "scripts": {
-    "start": "mkdir dist && cp -R ./src/assets ./dist/assets && parcel src/index.html",
+    "start": "parcel src/index.html",
     "build": "mkdir dist && cp -R ./src/assets ./dist/assets && parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,6 +1,7 @@
 import { World } from "./world/world";
 import { getRoot, createImage } from "./helpers/helpers";
 import { Player } from "./player/player";
+import { Engine } from "./world/Engine";
 
 const world = new World(getRoot(), window.innerWidth, window.innerHeight);
 const player = new Player(world, 363, 458);
@@ -14,17 +15,26 @@ const ctx = world.context;
 setInterval(() => {
   player.updateJump(true);
 }, 3000);
+
 let single = false;
 
-const update = () => {
-  if (!player.isAir) {
-    single = false;
-  } else if (player.isAir) {
-    single = true;
+const singleAnimation = (...conditions: boolean[]): void => {
+  for (const condition of conditions) {
+    if (!condition) {
+      single = false;
+      break;
+    }
+    if (condition) {
+      single = true;
+    }
   }
+};
+
+const update = () => {
+  singleAnimation(player.isAir);
   player.updateGravitation();
   player.updateRun();
-  player.updateAnimationRun(10, single);
+  player.updateAnimation(10, single);
   world.cameraObserveY(player.y);
   world.cameraObserveX(player.x, -150);
 };
@@ -32,15 +42,16 @@ const update = () => {
 const draw = () => {
   ctx.clearRect(0, 0, world.width, world.height);
   if (!player.isAir) {
-    player.drawAnimationRun(
+    player.drawAnimation(
       ctx,
       spriteSheetPlayerRun,
       10,
       player.x - world.camera.x,
       world.camera.y
     );
-  } else if (player.isAir) {
-    player.drawAnimationRun(
+  }
+  if (player.isAir) {
+    player.drawAnimation(
       ctx,
       spriteSheetPlayerJump,
       10,
@@ -50,14 +61,4 @@ const draw = () => {
   }
 };
 
-const mainLoop = () => {
-  update();
-  draw();
-  window.requestAnimationFrame(mainLoop);
-};
-
-const start = () => {
-  window.requestAnimationFrame(mainLoop);
-};
-
-window.addEventListener("load", start);
+const engine = new Engine(update, draw);

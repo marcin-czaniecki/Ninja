@@ -90,7 +90,7 @@ export class Player {
   updateRun() {
     this.x += this.speed;
   }
-  updateAnimationRun(maxFrame: number = 10, single: boolean) {
+  updateAnimation(maxFrame: number = 10, single: boolean) {
     this.activeWorld.nextFrame();
     if (this.activeWorld.currentFrame % this.speedAnimation === 0) {
       this.nextFrame();
@@ -103,7 +103,7 @@ export class Player {
       }
     }
   }
-  drawAnimationRun(
+  drawAnimation(
     context: CanvasRenderingContext2D,
     spriteSheet: HTMLImageElement,
     framesPerRow: number,
