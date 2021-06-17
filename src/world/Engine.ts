@@ -5,7 +5,7 @@ export class Engine {
   constructor(update: Function, draw: Function) {
     this.update = update;
     this.draw = draw;
-    window.addEventListener("load", () => this.start());
+    this.init();
   }
   mainLoop() {
     this.update();
@@ -15,7 +15,11 @@ export class Engine {
   start() {
     window.requestAnimationFrame(() => this.mainLoop());
   }
+  init() {
+    window.addEventListener("load", () => this.start());
+  }
   stop() {
     cancelAnimationFrame(this.engine);
+    window.removeEventListener("load", () => this.start());
   }
 }

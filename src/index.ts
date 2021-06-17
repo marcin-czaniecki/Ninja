@@ -62,3 +62,10 @@ const draw = () => {
 };
 
 const engine = new Engine(update, draw);
+
+setTimeout(() => {
+  engine.stop();
+}, 3500);
+setTimeout(() => {
+  engine.start();
+}, 6500);
