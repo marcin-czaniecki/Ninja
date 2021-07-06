@@ -2,9 +2,11 @@ export class Engine {
   update: Function;
   draw: Function;
   engine: number;
+  run: boolean;
   constructor(update: Function, draw: Function) {
     this.update = update;
     this.draw = draw;
+    this.run = false;
     this.init();
   }
   mainLoop() {
@@ -19,7 +21,15 @@ export class Engine {
     window.addEventListener("load", () => this.start());
   }
   stop() {
-    cancelAnimationFrame(this.engine);
+    window.cancelAnimationFrame(this.engine);
     window.removeEventListener("load", () => this.start());
+  }
+  pause() {
+    if (this.run) {
+      this.start();
+    } else {
+      this.stop();
+    }
+    this.run = !this.run;
   }
 }

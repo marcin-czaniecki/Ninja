@@ -12,10 +12,6 @@ const spriteSheetPlayerRun = createImage("./assets/ninja/run.png");
 const spriteSheetPlayerJump = createImage("./assets/ninja/jump.png");
 const ctx = world.context;
 
-setInterval(() => {
-  player.updateJump(true);
-}, 3000);
-
 let single = false;
 
 const singleAnimation = (...conditions: boolean[]): void => {
@@ -63,9 +59,22 @@ const draw = () => {
 
 const engine = new Engine(update, draw);
 
-setTimeout(() => {
-  engine.stop();
-}, 3500);
-setTimeout(() => {
-  engine.start();
-}, 6500);
+enum keys {
+  SPACE = " ",
+  ENTER = "Enter",
+}
+
+window.addEventListener("keydown", (e) => {
+  console.log(window.onload);
+  console.log(e.key);
+  switch (e.key) {
+    case keys.SPACE:
+      player.updateJump(true);
+      break;
+    case keys.ENTER:
+      engine.pause();
+      break;
+    default:
+      break;
+  }
+});
