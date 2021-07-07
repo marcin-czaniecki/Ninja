@@ -11,7 +11,7 @@ export class World {
     this._area = document.createElement("canvas");
     this.camera = { x: 0, y: 0 };
     this.currentFrame = 0;
-    this.ground = height * 0.34;
+    this.ground = 310;
     this.init(root);
   }
   get area() {
