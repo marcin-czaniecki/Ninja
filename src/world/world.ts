@@ -11,7 +11,7 @@ export class World {
     this._area = document.createElement("canvas");
     this.camera = { x: 0, y: 0 };
     this.currentFrame = 0;
-    this.ground = height * 0.3;
+    this.ground = height * 0.34;
     this.init(root);
   }
   get area() {
@@ -33,5 +33,23 @@ export class World {
     this.area.width = this.width;
     this.area.height = this.height;
     root.append(this._area);
+  }
+  drawSky() {
+    this.context.fillStyle = "LightSkyBlue";
+    this.context.fillRect(0, 0, this.width, this.ground);
+  }
+  drawBackground(image, width: number, height: number) {
+    let backgroundX = -(this.camera.x % width) - 200;
+    this.context.drawImage(image, backgroundX, this.height - height);
+    this.context.drawImage(image, backgroundX + width, this.height - height);
+    this.context.drawImage(
+      image,
+      backgroundX + width + width,
+      this.height - height
+    );
+  }
+  draw(image, width: number, height: number) {
+    this.drawSky();
+    this.drawBackground(image, width, height);
   }
 }

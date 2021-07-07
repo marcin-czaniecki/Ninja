@@ -1,15 +1,12 @@
-import { World } from "./world/world";
-import { getRoot, createImage } from "./helpers/helpers";
-import { Player } from "./player/player";
-import { Engine } from "./world/Engine";
-
-const world = new World(getRoot(), window.innerWidth, window.innerHeight);
-const player = new Player(world, 363, 458);
-player.setScale(0.5, 0.5);
-player.y = world.height - world.ground;
+import { createImage } from "./helpers/helpers";
+import Engine from "./world/Engine";
+import "./settingParamas";
+import { player, world } from "./settingParamas";
 
 const spriteSheetPlayerRun = createImage("./assets/ninja/run.png");
 const spriteSheetPlayerJump = createImage("./assets/ninja/jump.png");
+const forest = createImage("./assets/background/1/background.png");
+console.log(forest, spriteSheetPlayerRun);
 const ctx = world.context;
 
 let single = false;
@@ -31,19 +28,20 @@ const update = () => {
   player.updateGravitation();
   player.updateRun();
   player.updateAnimation(10, single);
-  world.cameraObserveY(player.y);
-  world.cameraObserveX(player.x, -150);
+  player.activeWorld.cameraObserveY(player.y);
+  player.activeWorld.cameraObserveX(player.x, -150);
 };
 
 const draw = () => {
-  ctx.clearRect(0, 0, world.width, world.height);
+  ctx.clearRect(0, 0, player.activeWorld.width, player.activeWorld.height);
+  world.draw(forest, 1920, 1080);
   if (!player.isAir) {
     player.drawAnimation(
       ctx,
       spriteSheetPlayerRun,
       10,
-      player.x - world.camera.x,
-      world.camera.y
+      player.x - player.activeWorld.camera.x,
+      player.activeWorld.camera.y
     );
   }
   if (player.isAir) {
@@ -51,8 +49,8 @@ const draw = () => {
       ctx,
       spriteSheetPlayerJump,
       10,
-      player.x - world.camera.x,
-      world.camera.y
+      player.x - player.activeWorld.camera.x,
+      player.activeWorld.camera.y
     );
   }
 };
@@ -64,17 +62,17 @@ enum keys {
   ENTER = "Enter",
 }
 
-window.addEventListener("keydown", (e) => {
-  console.log(window.onload);
-  console.log(e.key);
-  switch (e.key) {
-    case keys.SPACE:
+engine.setEventsKeyDown([
+  {
+    key: keys.SPACE,
+    fn: () => {
       player.updateJump(true);
-      break;
-    case keys.ENTER:
+    },
+  },
+  {
+    key: keys.ENTER,
+    fn: () => {
       engine.pause();
-      break;
-    default:
-      break;
-  }
-});
+    },
+  },
+]);
