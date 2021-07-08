@@ -1,12 +1,8 @@
 import { getRoot } from "./helpers/helpers";
-import Player from "./player/player";
-import { World } from "./world/world";
+import Player from "./player/Player";
+import { World } from "./world/World";
 
-export const world = new World(
-  getRoot(),
-  window.innerWidth,
-  window.innerHeight
-);
+export const world = new World(getRoot(), window.innerWidth, window.innerHeight);
 
 export const player = new Player(world, 363, 458);
 

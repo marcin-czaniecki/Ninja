@@ -1,4 +1,4 @@
-import { World } from "../world/world";
+import { World } from "../world/World";
 
 export default (() => {
   let instance = undefined;
@@ -117,8 +117,7 @@ export default (() => {
       screenX: number,
       screenY: number
     ) {
-      const { spriteSheetX, spriteSheetY } =
-        this.divideSpriteSheet(framesPerRow);
+      const { spriteSheetX, spriteSheetY } = this.divideSpriteSheet(framesPerRow);
       context.drawImage(
         spriteSheet,
         spriteSheetX,

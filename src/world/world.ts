@@ -29,6 +29,12 @@ export class World {
   cameraObserveY(y: number, padding: number = 0) {
     this.camera.y = y + padding;
   }
+  updateSize(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+    this.area.width = this.width;
+    this.area.height = this.height;
+  }
   init(root: HTMLDivElement) {
     this.area.width = this.width;
     this.area.height = this.height;

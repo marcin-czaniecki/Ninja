@@ -1,12 +1,13 @@
 import { createImage } from "./helpers/helpers";
 import Engine from "./world/Engine";
-import "./settingParamas";
-import { player, world } from "./settingParamas";
+import "./settingParams";
+import { player, world } from "./settingParams";
 
 const spriteSheetPlayerRun = createImage("./assets/ninja/run.png");
 const spriteSheetPlayerJump = createImage("./assets/ninja/jump.png");
-const forest = createImage("./assets/background/1/background.png");
-console.log(forest, spriteSheetPlayerRun);
+const forest = createImage("./assets/background/6/background.png");
+const ground = createImage("./assets/background/6/ground.png");
+
 const ctx = world.context;
 
 let single = false;
@@ -30,11 +31,17 @@ const update = () => {
   player.updateAnimation(10, single);
   player.activeWorld.cameraObserveY(player.y);
   player.activeWorld.cameraObserveX(player.x, -150);
+
+  //looking for a better solution or returning to the lack of adaptation of the game view to the window
+  const equalWorldWithWindow = world.width !== window.innerWidth || world.height !== window.innerHeight;
+  if (equalWorldWithWindow) {
+    world.updateSize(window.innerWidth, window.innerHeight);
+  }
 };
 
 const draw = () => {
   ctx.clearRect(0, 0, player.activeWorld.width, player.activeWorld.height);
-  world.draw(forest, 1920, 1080);
+  world.drawBackground(forest, 1920, 1080);
   if (!player.isAir) {
     player.drawAnimation(
       ctx,
@@ -53,6 +60,7 @@ const draw = () => {
       player.activeWorld.camera.y
     );
   }
+  world.drawBackground(ground, 1920, 1080);
 };
 
 const engine = new Engine(update, draw);
